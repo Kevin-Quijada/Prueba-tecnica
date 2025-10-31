@@ -1,44 +1,32 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import { getRandomFact } from './services/facts.js'
+import { useCatImage } from './hooks/useCatImages.js'
 // const CAT_ENPOINT_IMAGE_URL = `https://cataas.com/cat/says/${firtsWord}?fontSize=50&fontColor=red&json=true`
 // "{fact && <p>{fact}</p>}" es un renderizado condicional
 
-function useCatImage ({ fact, setFact }) { // custom hook
-  const [imageUrl, setImageUrl] = useState()
+const useCatFact = () => { // Cuando se crea un custom hook evitar nombarlo de manera que explique su funcionalidad. Esto porque puede que el custom hook cambie su funcionalidad
+  const [fact, setFact] = useState()
   const [factError, setFactError] = useState()
 
-  // No se recomienda utilizar react Query, SWR, axios, apolo
-  // para recuperar la cita al cargar la pagina
-  useEffect(() => {
+  const getRandomFactAndUpdateState = async () => { // extraer la logica de recuperar la cita en una funcion aparte
     if (!setFact) return
     getRandomFact().then(newFact => setFact(newFact)).catch(setFactError)
-  }, [setFact])
+  }
+  // No se recomienda utilizar react Query, SWR, axios, apolo
+  // para recuperar la cita al cargar la pagina
+  useEffect(getRandomFactAndUpdateState, [setFact])
 
-  // Recuperar la imagen cada vez que cambie la cita
-  useEffect(() => {
-    if (!fact) return
-    const threeFirtsWords = fact.split(' ').slice(0, 3).join(' ')
-    const encoded = encodeURIComponent(threeFirtsWords)
-    fetch(`https://cataas.com/cat/says/${encoded}?fontSize=50&fontColor=red&json=true`)
-      .then(res => res.json())
-      .then(response => {
-        const { url } = response
-        setImageUrl(url)
-        console.log(url)
-      })
-  }, [fact])
-
-  return { imageUrl }
-} // Devuelve la url de la imagen {imageUrl: 'https...'}
+  return { fact, factError, getRandomFactAndUpdateState }
+}
 
 export function App () {
-  const [fact, setFact] = useState()
-  const { imageUrl } = useCatImage({ fact, setFact })
+  const { fact, factError, getRandomFactAndUpdateState } = useCatFact()
+  const { imageUrl } = useCatImage({ fact, setFact: null }) // pasar null porque no se necesita setFact en este custom hook
 
   const handleClick = async () => {
-    const newFact = await getRandomFact()
-    setFact(newFact)
+    getRandomFactAndUpdateState()
+    factError && console.error(factError) // manejar el error si existe
   }
 
   return (
