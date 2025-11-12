@@ -1,6 +1,7 @@
 import './App.css'
 import { useCatImage } from './hooks/useCatImages.js'
 import { useCatFact } from './hooks/useCatFact.js'
+import { Otro } from './Components/Otro.jsx'
 // const CAT_ENPOINT_IMAGE_URL = `https://cataas.com/cat/says/${firtsWord}?fontSize=50&fontColor=red&json=true`
 // "{fact && <p>{fact}</p>}" es un renderizado condicional
 

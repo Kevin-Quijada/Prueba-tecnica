@@ -9,7 +9,6 @@ export const getRandomFact = async () => {
     }
     const data = await res.json()
     const { fact } = data
-    console.log(fact)
     return fact
   } catch (err) {
     // tanto si hay error con la respuesta
